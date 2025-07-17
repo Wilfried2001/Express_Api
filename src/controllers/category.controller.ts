@@ -39,6 +39,7 @@ export const createCategory = async (req: Request, res: Response) => {
   }
 };
 
+
 // Modifier une catégorie par ID
 export const updateCategory = async (
   req: Request,
