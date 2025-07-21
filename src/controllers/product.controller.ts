@@ -9,7 +9,7 @@ export const getAllProducts = async (req: Request, res: Response) => {
     const products = await Product.findAll({
       include: [
         { model: ProductImage, as: "images" },
-        { model: Category, as: "category" },
+        { model: Category, as: "category", attributes: ["name"] },
       ],
     });
     res.json(products);
@@ -63,6 +63,8 @@ export const getProductById = async (
 export const createProduct = async (req: Request, res: Response) => {
   try {
     const { name, description, price, stock, categoryId } = req.body;
+
+    // Création du produit
     const product = await Product.create({
       name,
       description,
@@ -70,7 +72,17 @@ export const createProduct = async (req: Request, res: Response) => {
       stock,
       categoryId,
     });
-    res.status(201).json(product);
+
+    // 🔥 Recharge le produit avec la catégorie associée (join)
+    const productWithCategory = await Product.findByPk(product.id, {
+      include: {
+        model: Category,
+        as: "category",
+        attributes: ["name"], // on n'envoie que le nom de la catégorie
+      },
+    });
+
+    res.status(201).json(productWithCategory);
   } catch (error) {
     res.status(400).json({ message: "Données invalides", error });
   }
@@ -83,6 +95,7 @@ export const updateProduct = async (
 ): Promise<void> => {
   try {
     const { name, description, price, stock, categoryId } = req.body;
+
     const product = await Product.findByPk(req.params.id);
     if (!product) {
       res.status(404).json({ message: "Produit non trouvé" });
@@ -90,14 +103,23 @@ export const updateProduct = async (
     }
 
     await product.update({ name, description, price, stock, categoryId });
-    res.json(product);
+
+    // 🔄 Recharge le produit avec la relation category
+    const updatedProduct = await Product.findByPk(product.id, {
+      include: [{ association: "category" }],
+    });
+
+    res.json(updatedProduct);
   } catch (error) {
     res.status(400).json({ message: "Erreur mise à jour", error });
   }
 };
 
 // Supprimer un produit (et ses images)
-export const deleteProduct = async (req: Request, res: Response): Promise<void> => {
+export const deleteProduct = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const product = await Product.findByPk(req.params.id);
     if (!product) {

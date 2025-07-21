@@ -10,10 +10,12 @@ import productRoutes from "./routes/product.routes";
 import categoryRoutes from "./routes/category.routes";
 // Import des routes catégories définies dans category.routes.ts
 
-import productImageRoutes from './routes/productImage.routes';
+import productImageRoutes from "./routes/productImage.routes";
 
-import path from 'path';
+import path from "path";
 
+import cors from "cors";
+// Import du middleware CORS pour gérer les requêtes cross-origin
 
 dotenv.config();
 // Chargement des variables d'environnement depuis le fichier .env
@@ -24,6 +26,13 @@ const app = express();
 app.use(express.json());
 // Middleware pour parser automatiquement le corps des requêtes au format JSON
 
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || "http://localhost:5173", // Met ici ton URL front en prod ou dev
+    credentials: true, // si tu gères les cookies / sessions
+  })
+);
+
 // Déclaration des routes principales de l'API
 
 app.use("/api/products", productRoutes);
@@ -32,9 +41,9 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 // Toute requête commençant par /api/categories sera gérée par categoryRoutes
 
-app.use('/api/products', productImageRoutes);
+app.use("/api/products", productImageRoutes);
 
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Route simple pour vérifier que l'API fonctionne
 app.get("/", (req: Request, res: Response) => {

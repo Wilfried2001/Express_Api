@@ -9,8 +9,8 @@ import {
 
 const router = Router();
 
- router.get('/getAllProduct', getAllProducts);
- router.get('/getCategory/:id', getProductById);
+ router.get('/getAllProducts', getAllProducts);
+ router.get('/getProduct/:id', getProductById);
  router.post('/create', createProduct);
  router.put('/update/:id', updateProduct);
 router.delete('/delete/:id', deleteProduct);
