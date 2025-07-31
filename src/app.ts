@@ -12,6 +12,8 @@ import categoryRoutes from "./routes/category.routes";
 
 import productImageRoutes from "./routes/productImage.routes";
 
+import userRoutes from "./routes/user.routes";
+
 import path from "path";
 
 import cors from "cors";
@@ -42,6 +44,8 @@ app.use("/api/categories", categoryRoutes);
 // Toute requête commençant par /api/categories sera gérée par categoryRoutes
 
 app.use("/api/products", productImageRoutes);
+
+app.use("/api/users", userRoutes);
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
