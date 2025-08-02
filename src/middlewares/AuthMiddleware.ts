@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
-// import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import User from "../models/user.model"; // Assurez-vous que le chemin est correct
 dotenv.config(); // Charger les variables d'environnement dès le début
 // Définition de l'interface pour l'utilisateur
 interface AuthRequest extends Request {
@@ -35,24 +36,24 @@ export const AuthMiddleware = async (
       return;
     }
 
-    // const decoded = jwt.verify(token, SECRET_KEY) as { id: string };
-    // // console.log("Decoded token:", decoded); // Vérifie les informations du token
-    // const user = await User.findByPk(decoded.id);
+    const decoded = jwt.verify(token, SECRET_KEY) as { id: string };
+    // console.log("Decoded token:", decoded); // Vérifie les informations du token
+    const user = await User.findByPk(decoded.id);
 
-    // if (!user) {
-    //   res.status(401).json({ message: "Utilisateur non trouvé" });
-    //   return;
-    // }
+    if (!user) {
+      res.status(401).json({ message: "Utilisateur non trouvé" });
+      return;
+    }
 
-    // req.user = {
-    //   id: user.id,
-    //   uuid: user.uuid,
-    //   name: user.name,
-    //   email: user.email,
-    //   role: user.role as "admin" | "employee",
-    //   profilePicture: user.profilePicture,
-    //   createdBy: user.createdBy,
-    // };
+    req.user = {
+      id: user.id,
+      uuid: user.uuid,
+      name: user.name,
+      email: user.email,
+      role: user.role as "admin" | "employee",
+      profilePicture: user.profilePicture,
+      createdBy: user.createdBy,
+    };
 
     next(); // Passer à la route suivante
   } catch (error) {
