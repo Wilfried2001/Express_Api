@@ -16,6 +16,8 @@ import userRoutes from "./routes/user.routes";
 
 import authRoute from "./routes/auth.routes";
 
+import authClientRoute from "./routes/authClient.routes";
+
 import path from "path";
 
 import cors from "cors";
@@ -30,10 +32,18 @@ const app = express();
 app.use(express.json());
 // Middleware pour parser automatiquement le corps des requêtes au format JSON
 
+const allowedOrigins = ["http://localhost:5173", "http://localhost:3000"];
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:5173", // Met ici ton URL front en prod ou dev
-    credentials: true, // si tu gères les cookies / sessions
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
   })
 );
 
@@ -50,6 +60,8 @@ app.use("/api/products", productImageRoutes);
 app.use("/api/users", userRoutes);
 
 app.use("/api/auth", authRoute);
+
+app.use("/api/authClient", authClientRoute);
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
